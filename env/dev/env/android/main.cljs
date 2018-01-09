@@ -23,4 +23,4 @@
 
 (utils.handlers/add-pre-event-callback rr/pre-event-callback)
 
-(rr/enable-re-frisk-remote! {:host "10.0.3.2:4567" :on-init core/init})
+(rr/enable-re-frisk-remote! {:host "10.0.2.2:4567" :on-init core/init})

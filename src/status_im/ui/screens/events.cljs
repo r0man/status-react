@@ -91,8 +91,9 @@
          (dissoc :callback-events-creator)
          (assoc :callback
                 (fn [jail-response]
-                  (doseq [event (callback-events-creator jail-response)]
-                    (dispatch event))))))))
+                  (when callback-events-creator
+                    (doseq [event (callback-events-creator jail-response)]
+                      (dispatch event)))))))))
 
 (reg-fx
   :call-jail-function

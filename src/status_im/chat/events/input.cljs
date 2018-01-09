@@ -418,8 +418,7 @@
       (update fx :db #(-> %
                           (clear-seq-arguments)
                           (set-chat-input-metadata nil)
-                          (set-chat-input-text nil)
-                          (model/set-chat-ui-props {:sending-in-progress? false}))))))
+                          (set-chat-input-text nil))))))
 
 (handlers/register-handler-fx
   ::check-command-type
@@ -441,17 +440,19 @@
                                       [::send-command (assoc-in command-message
                                                                 [:command :preview] returned)])})))))
 
+;; TODO(alwx):
 (handlers/register-handler-fx
   :send-current-message
   message-model/send-interceptors
-  (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now :as cofx} _]
+  (fn [{{:keys [current-chat-id current-public-key chat-ui-props] :as db} :db
+        message-id :random-id current-time :now :as cofx} _]
     (let [input-text   (get-in db [:chats current-chat-id :input-text])
           chat-command (-> (input-model/selected-chat-command db)
                            (as-> selected-command
-                               (if (get-in selected-command [:command :sequential-params])
-                                 (assoc selected-command :args
-                                        (get-in db [:chats current-chat-id :seq-arguments]))
-                                 (update selected-command :args (partial remove str/blank?)))))]
+                             (if (get-in selected-command [:command :sequential-params])
+                               (assoc selected-command :args
+                                                       (get-in db [:chats current-chat-id :seq-arguments]))
+                               (update selected-command :args (partial remove str/blank?)))))]
       (if (:command chat-command)
         ;; current input contains command
         (if (= :complete (input-model/command-completion chat-command))

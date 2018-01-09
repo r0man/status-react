@@ -25,10 +25,10 @@
       result
       (let [command' (assoc command :handler-data returned)
             params'  (assoc params :command command')] 
-        (dispatch [:chat-send-message/process-command chat-id params']))
+        (dispatch [:chat-send-message/send-command chat-id params']))
 
       (not (or error handler-error))
-      (dispatch [:chat-send-message/process-command chat-id params])
+      (dispatch [:chat-send-message/send-command chat-id params])
 
       :else nil)))
 

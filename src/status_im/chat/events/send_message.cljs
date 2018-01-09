@@ -44,10 +44,10 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  :chat-send-message/process-command
+  :chat-send-message/send-command
   message-model/send-interceptors
   (fn [cofx [add-to-chat-id params]]
-    (message-model/process-command cofx params)))
+    (message-model/send-command cofx nil add-to-chat-id params)))
 
 (handlers/register-handler-fx
   :chat-send-message/from-jail

@@ -328,14 +328,12 @@
                                            :message-id      id}
                                           (:async-handler command)
                                           (assoc :orig-params orig-params))}]
-    {:call-jail {:jail-id  identity
-                 :path     [handler-type [name scope-bitmask] :handler]
-                 :params   jail-params
-                 :callback (if (:async-handler command)
-                             (fn [_]
-                               (log/debug "Async command handler called"))
-                             (fn [res]
-                               (re-frame/dispatch [:command-handler! chat-id orig-params res])))}}))
+    {:call-jail {:jail-id                 identity
+                 :path                    [handler-type [name scope-bitmask] :handler]
+                 :params                  jail-params
+                 :callback-events-creator (fn [jail-response]
+                                            [(when-not (:async-handler command)
+                                               [:command-handler! chat-id orig-params jail-response])])}}))
 
 (defn process-command
   [{:keys [db] :as cofx} {:keys [command message chat-id] :as params}]
