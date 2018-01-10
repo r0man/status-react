@@ -76,17 +76,22 @@
 (defview messages-view [chat-id group-chat]
   (letsubs [messages           [:get-chat-messages chat-id]
             current-public-key [:get-current-public-key]
-            opacity            (anim/create-value 0)]
+            opacity            (anim/create-value 0)
+            duration           (if platform/android? 100 200)
+            timeout            (if platform/android? 50 0)
+            preview-style      {:flex            1
+                                :align-items     :center
+                                :justify-content :center}
+            preview            (vec [react/view preview-style])]
     {:component-did-mount (fn [component]
                             (js/setTimeout
                              #(anim/start (anim/spring opacity {:toValue  1
-                                                                :duration 100}))
-                             (if platform/android? 50 0)))}
+                                                                :duration duration}))
+                             timeout))}
     (let [messages-cnt (count messages)]
       [react/with-activity-indicator
-       {:style {:flex            1
-                :align-items     :center
-                :justify-content :center}}
+       {:style   preview-style
+        :preview preview}
        [react/animated-view {:style {:opacity opacity
                                      :flex    1}}
         [list/flat-list {:data                      messages
